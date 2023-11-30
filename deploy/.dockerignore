@@ -1,0 +1,14 @@
+.git
+.github
+.gitignore
+.gitattributes
+
+.gradle
+.idea
+
+bin
+build
+
+Makefile
+README.md
+
