@@ -1,7 +1,7 @@
-FROM gradle:jdk11 AS build
+FROM gradle:jdk19 AS build
 
 WORKDIR /home/gradle/src
 
 COPY --chown=gradle:gradle . /home/gradle/src
 
-RUN gradle test --no-daemon
+CMD ["gradle", "test", "--no-daemon"]

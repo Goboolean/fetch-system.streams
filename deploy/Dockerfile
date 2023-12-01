@@ -1,4 +1,4 @@
-FROM gradle:jdk11 AS build
+FROM gradle:jdk19 AS build
 
 WORKDIR /home/gradle/project
 
@@ -8,7 +8,7 @@ COPY --chown=gradle:gradle src /home/gradle/project/src
 
 RUN gradle build --no-daemon
 
-FROM openjdk:11-jre-slim
+FROM openjdk:11-jre
 
 WORKDIR /app
 
