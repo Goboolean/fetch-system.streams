@@ -1,0 +1,11 @@
+spring:
+  kafka:
+    bootstrap-servers: kafka:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.goboolean.streams.serde.ProtobufSerde.ProtobufSerializer
+    consumer:
+      group-id: myGroup
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.goboolean.streams.serde.ProtobufAggregateSerde.ProtobufDeserializer
+      auto-offset-reset: earliest
