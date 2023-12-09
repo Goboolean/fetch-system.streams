@@ -3,3 +3,10 @@ test-app:
 
 build-image:
 	docker build -t fetch-system-streams -f ./deploy/Dockerfile .
+
+sync-protobuf:
+	@curl -s -L https://raw.githubusercontent.com/Goboolean/fetch-system.IaC/feature/model/api/protobuf/model.proto -o ./src/main/resources/model.proto
+
+generate-protobuf: \
+	protobuf-sync
+	@protoc --java_out=./src/main/java ./src/main/resources/model.proto
