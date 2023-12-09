@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ProtobufSerdeTests {
 
     @Test
-    public void testTradeSerde() throws Exception {
+    public void testTradeProtobufBuilder() throws Exception {
 
         Trade trade = Trade.newBuilder()
                 .setPrice(1000.05)
@@ -38,7 +38,7 @@ public class ProtobufSerdeTests {
     }
 
     @Test
-    public void testXXX() {
+    public void testTradeSerde() {
 
         Trade trade = Trade.newBuilder()
                 .setPrice(1000.05)
@@ -61,6 +61,5 @@ public class ProtobufSerdeTests {
         assertEquals(trade.getSize(), newTrade.getSize());
         assertEquals(trade.getTimestamp(), newTrade.getTimestamp());
         assertEquals(trade, newTrade);
-
     }
 }
