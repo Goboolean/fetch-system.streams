@@ -8,7 +8,6 @@ import org.springframework.context.annotation.ComponentScan;
 import java.util.Map;
 
 @ComponentScan
-
 public class ProtobufSerde<T extends com.google.protobuf.GeneratedMessageV3> implements Serde<T> {
     private final Serializer<T> serializer;
     private final Deserializer<T> deserializer;
