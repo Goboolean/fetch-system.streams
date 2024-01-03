@@ -28,14 +28,14 @@ public class JsonSerde<T> implements Serde<T> {
         return new JsonDeserializer();
     }
 
-    private class JsonSerializer implements Serializer<T> {
+    protected class JsonSerializer implements Serializer<T> {
         @Override
         public byte[] serialize(String topic, T data) {
             return gson.toJson(data).getBytes(StandardCharsets.UTF_8);
         }
     }
 
-    private class JsonDeserializer implements Deserializer<T> {
+    protected class JsonDeserializer implements Deserializer<T> {
         @Override
         public T deserialize(String topic, byte[] data) {
             if (data == null) {
