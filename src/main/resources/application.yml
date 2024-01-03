@@ -1,11 +1,16 @@
+logging:
+  level:
+    org.springframework: DEBUG
+    org.apache.kafka: DEBUG
+
 spring:
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
     producer:
+      bootstrap-servers: mulmuri.dev:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: io.goboolean.streams.serde.ProtobufAggregateSerde.ProtobufSerializer
+      value-serializer: io.goboolean.streams.serde.JsonAggregateSerde.JsonSerializer
     consumer:
       group-id: myGroup
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: io.goboolean.streams.serde.ProtobufAggregateSerde.ProtobufDeserializer
+      value-deserializer: io.goboolean.streams.serde.JsonTradeSerde.JsonDeserializer
       auto-offset-reset: earliest
