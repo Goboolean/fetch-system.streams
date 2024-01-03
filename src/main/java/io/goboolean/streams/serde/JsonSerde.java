@@ -1,17 +1,21 @@
 package io.goboolean.streams.serde;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
 
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.time.ZonedDateTime;
 import java.util.Map;
 
 public class JsonSerde<T> implements Serde<T> {
 
-    private final Gson gson = new Gson();
+    private final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(ZonedDateTime.class, new GsonZonedDateTimeAdapter())
+            .create();
     private final Class<T> targetType;
 
     public JsonSerde(Class<T> targetType) {
