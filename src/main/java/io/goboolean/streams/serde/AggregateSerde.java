@@ -6,7 +6,6 @@ import org.apache.kafka.common.serialization.Serializer;
 public class AggregateSerde {
 
     private static final JsonSerde<Model.Aggregate> jsonSerdeInstance = new JsonSerde<>(Model.Aggregate.class);
-    //private static final ProtobufSerde<ProtobufModel.AggregateProtobuf> protobufSerdeInstance = new ProtobufSerde<>(ProtobufModel.AggregateProtobuf.class);
 
     private static final Serde<ProtobufModel.AggregateProtobuf> protobufAggregateSerde() {
         return new ProtobufSerde<>(

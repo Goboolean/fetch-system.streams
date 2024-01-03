@@ -2,6 +2,7 @@ package io.goboolean.streams.config;
 
 import io.goboolean.streams.serde.AggregateSerde;
 import io.goboolean.streams.serde.ProtobufSerde;
+import io.goboolean.streams.serde.TradeSerde;
 import org.apache.kafka.common.serialization.Serde;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,5 +47,25 @@ public class AppConfig {
     @Bean
     public AggregateSerde.ProtobufDeserializer protobufAggregateDeserializer() {
         return new AggregateSerde.ProtobufDeserializer();
+    }
+
+    @Bean
+    public TradeSerde.JsonSerializer jsonTradeSerializer() {
+        return new TradeSerde.JsonSerializer();
+    }
+
+    @Bean
+    public TradeSerde.JsonDeserializer jsonTradeDeserializer() {
+        return new TradeSerde.JsonDeserializer();
+    }
+
+    @Bean
+    public TradeSerde.ProtobufSerializer protobufTradeSerializer() {
+        return new TradeSerde.ProtobufSerializer();
+    }
+
+    @Bean
+    public TradeSerde.ProtobufDeserializer protobufTradeDeserializer() {
+        return new TradeSerde.ProtobufDeserializer();
     }
 }

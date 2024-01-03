@@ -15,4 +15,16 @@ public class TradeSerde {
             jsonSerdeInstance.super();
         }
     }
+
+    public static class ProtobufSerializer extends ProtobufSerde.ProtobufSerializer<ProtobufModel.TradeProtobuf> {
+        public ProtobufSerializer() {
+            super();
+        }
+    }
+
+    public static class ProtobufDeserializer extends ProtobufSerde.ProtobufDeserializer<ProtobufModel.TradeProtobuf> {
+        public ProtobufDeserializer() {
+            super(ProtobufModel.TradeProtobuf.parser());
+        }
+    }
 }
