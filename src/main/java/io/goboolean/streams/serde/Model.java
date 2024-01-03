@@ -47,4 +47,5 @@ public final class Model {
             this.timestamp = timestamp;
         }
     }
+
 }
