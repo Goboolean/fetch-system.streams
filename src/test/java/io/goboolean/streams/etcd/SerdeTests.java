@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -15,19 +16,19 @@ public class SerdeTests {
 
     public static class Product implements Model {
         @Etcd("id")
-        private String id;
+        public String id;
 
         @Etcd("platform")
-        private String platform;
+        public String platform;
 
         @Etcd("symbol")
-        private String symbol;
+        public String symbol;
 
         @Etcd("locale")
-        private String locale;
+        public String locale;
 
         @Etcd("market")
-        private String market;
+        public String market;
 
         public Product() {
         }
@@ -91,12 +92,21 @@ public class SerdeTests {
     public void testGroupByPrefix() throws IllegalArgumentException {
         for (TestCase testCase : testCases) {
             List<Map<String, String>> got = Serde.groupByPrefix(testCase.kvPair);
-
             assert got.size() == testCase.group().length;
 
             Arrays.stream(testCase.group()).forEach(group -> {
                 assert got.contains(group.kvPair);
             });
+        }
+    }
+
+    @Test
+    public void testSerialize() throws IllegalAccessException {
+        for (TestCase testCase : testCases) {
+            for (Group group : testCase.group()) {
+                Map<String, String> got = Serde.serialize(group.data);
+                assert got.equals(group.kvPair);
+            }
         }
     }
 }
