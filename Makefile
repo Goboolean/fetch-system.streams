@@ -9,4 +9,4 @@ sync-protobuf:
 
 generate-protobuf: \
 	sync-protobuf
-	@protoc --java_out=./src/main/java ./src/main/resources/model.proto
+	@protoc --java_out=./src/main/java ./src/main/resources/protobuf_model.proto
