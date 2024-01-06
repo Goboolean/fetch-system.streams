@@ -5,9 +5,10 @@ logging:
 
 spring:
   kafka:
+    bootstrap-servers: mulmuri.dev:9092
     producer:
       bootstrap-servers: mulmuri.dev:9092
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      key-serializer: org.apache.kafka.common.serialization.LongSerializer
       value-serializer: io.goboolean.streams.serde.JsonAggregateSerde.JsonSerializer
     consumer:
       group-id: myGroup
