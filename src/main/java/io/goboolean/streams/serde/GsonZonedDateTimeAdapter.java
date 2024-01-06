@@ -15,8 +15,7 @@ public class GsonZonedDateTimeAdapter implements JsonSerializer<ZonedDateTime>, 
         }
 
         @Override
-        public ZonedDateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-                throws JsonParseException {
+        public ZonedDateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
                 long time = json.getAsLong();
                 return ZonedDateTime.ofInstant(Instant.ofEpochSecond(time / 1_000_000_000L, time % 1_000_000_000L), ZoneOffset.UTC);
         }

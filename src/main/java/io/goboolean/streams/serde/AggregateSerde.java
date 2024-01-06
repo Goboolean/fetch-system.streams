@@ -7,12 +7,6 @@ public class AggregateSerde {
 
     private static final JsonSerde<Model.Aggregate> jsonSerdeInstance = new JsonSerde<>(Model.Aggregate.class);
 
-    private static final Serde<ProtobufModel.AggregateProtobuf> protobufAggregateSerde() {
-        return new ProtobufSerde<>(
-                new ProtobufSerde.ProtobufSerializer<>(),
-                new ProtobufSerde.ProtobufDeserializer<>(ProtobufModel.AggregateProtobuf.parser())
-        );
-    }
     public static class JsonSerializer extends JsonSerde<Model.Aggregate>.JsonSerializer {
         public JsonSerializer() {
             jsonSerdeInstance.super();

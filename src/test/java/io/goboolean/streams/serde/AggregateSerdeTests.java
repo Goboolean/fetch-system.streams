@@ -24,6 +24,8 @@ public class AggregateSerdeTests {
     private AggregateSerde.ProtobufDeserializer protobufDeserializer;
 
 
+
+
     @Test
     public void testJsonSerde() {
         Model.Aggregate aggregate = new Model.Aggregate(

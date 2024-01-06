@@ -11,7 +11,7 @@ import  io.goboolean.streams.serde.ProtobufModel.AggregateProtobuf;
 import  io.goboolean.streams.serde.ProtobufModel.TradeProtobuf;
 
 @Configuration
-public class AppConfig {
+public class SerdeConfig {
 
     @Bean
     public Serde<TradeProtobuf> protobufTradeSerde() {
