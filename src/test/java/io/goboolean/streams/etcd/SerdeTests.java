@@ -136,4 +136,28 @@ public class SerdeTests {
             }
         }
     }
+
+    @Test
+    public void testSerializeDeserialize() throws IllegalAccessException {
+        for (TestCase testCase : testCases) {
+            for (Group group : testCase.group()) {
+                Map<String, String> kvPair = Serde.serialize(group.data);
+                assert kvPair.equals(group.kvPair);
+
+                Product got = new Product();
+                Serde.deserialize(kvPair, got);
+                assert got.equals(group.data);
+            }
+        }
+    }
+
+    @Test
+    public void testSerializeList() throws IllegalAccessException {
+        for (TestCase testCase : testCases) {
+            List<Model> models = Arrays.asList(testCase.group()[0].data(), testCase.group()[1].data());
+            Map<String, String> got = Serde.serializeList(models);
+
+            assert got.equals(testCase.kvPair);
+        }
+    }
 }
