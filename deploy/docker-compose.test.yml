@@ -7,8 +7,10 @@ services:
       dockerfile: ./deploy/Dockerfile.test
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - ETCD_ENDPOINTS=etcd:2379
     depends_on:
       - kafka
+      - etcd
 
   kafka:
     hostname: kafka
@@ -29,6 +31,14 @@ services:
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
       # Kafka settings
       - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
-      - "ALLOW_PLAINTEXT_LISTENER=yes" 
-      - "listeners=PLAINTEXT://0.0.0.0/0"
-      - "advertised.listeners=PLAINTEXT://kafka:9092"
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - listeners=PLAINTEXT://0.0.0.0/0
+      - advertised.listeners=PLAINTEXT://kafka:9092
+
+  etcd:
+    image: bitnami/etcd:latest
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+    ports:
+      - "2379"
+      - "2380"
