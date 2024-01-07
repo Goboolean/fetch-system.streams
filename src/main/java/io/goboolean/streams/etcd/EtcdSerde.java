@@ -5,10 +5,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-public class Serde {
+public class EtcdSerde<T extends Model> {
 
-    public static List<Map<String, String>> groupByPrefix(Map<String, String> input) throws IllegalArgumentException {
+    private final Class<T> type;
+
+    public EtcdSerde(Class<T> type) {
+        this.type = type;
+    }
+
+    public List<Map<String, String>> groupByPrefix(Map<String, String> input) throws IllegalArgumentException {
         Map<String, Map<String, String>> mapBased = new HashMap<>();
         String type = null;
 
@@ -42,7 +49,7 @@ public class Serde {
         return new ArrayList<>(mapBased.values());
     }
 
-    public static Map<String, String> serialize(Model model) throws IllegalAccessException {
+    public Map<String, String> serialize(T model) throws IllegalAccessException {
         Map<String, String> result = new HashMap<>();
         Class<?> cls = model.getClass();
 
@@ -66,7 +73,6 @@ public class Serde {
         for (Field field : cls.getDeclaredFields()) {
             Etcd annotation = field.getAnnotation(Etcd.class);
 
-            System.out.println("annotation value: " + annotation.value());
             if (annotation != null && !"id".equals(annotation.value())) {
                 field.setAccessible(true);
                 String fieldValue = String.valueOf(field.get(model));
@@ -79,16 +85,16 @@ public class Serde {
         return result;
     }
 
-    public static Map<String, String> serializeList(List<Model> models) throws IllegalAccessException {
-        Map<String, String> result = new HashMap<>();
-        for (Model model : models) {
-            result.putAll(serialize(model));
-        }
-        return result;
-    }
+    public T deserialize(Map<String, String> input) throws IllegalAccessException {
+        T result;
 
-    public static void deserialize(Map<String, String> input, Model model) throws IllegalAccessException {
-        Class<?> cls = model.getClass();
+        try {
+            result = type.newInstance();
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        }
+        Class<?> cls = result.getClass();
+
 
         String id = null;
         for (Map.Entry<String, String> entry : input.entrySet()) {
@@ -97,7 +103,7 @@ public class Serde {
             if (parts.length < 4) continue;
 
             String modelType = parts[1];
-            if (!model.getName().equals(modelType)) {
+            if (!result.getName().equals(modelType)) {
                 throw new IllegalArgumentException("Type mismatch");
             }
 
@@ -114,21 +120,29 @@ public class Serde {
 
                 if (annotation != null && fieldName.equals(annotation.value())) {
                     field.setAccessible(true);
-                    field.set(model, entry.getValue());
-
-                    System.out.println("annotation value: " + annotation.value());
-                    System.out.println("fieldName: " + fieldName);
+                    field.set(result, entry.getValue());
                 }
             }
         }
-        System.out.println("id: " + id);
 
         for (Field field : cls.getDeclaredFields()) {
             Etcd annotation = field.getAnnotation(Etcd.class);
             if (annotation != null && "id".equals(annotation.value())) {
                 field.setAccessible(true);
-                field.set(model, id);
+                field.set(result, id);
             }
         }
+
+        return result;
+    }
+
+    public List<T> deserializeList(List<Map<String, String>> input) throws IllegalAccessException {
+        return input.stream().map(map -> {
+            try {
+                return deserialize(map);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }).collect(Collectors.toList());
     }
 }
