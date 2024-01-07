@@ -101,14 +101,4 @@ public class EtcdSerdeTests {
             }
         }
     }
-
-    @Test
-    public void testSerializeList() throws IllegalAccessException {
-        for (TestCase testCase : testCases) {
-            List<Product> models = Arrays.asList(testCase.group()[0].data(), testCase.group()[1].data());
-            Map<String, String> got = serde.serializeList(models);
-
-            assert got.equals(testCase.kvPair);
-        }
-    }
 }

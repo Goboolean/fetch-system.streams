@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class EtcdSerde<T extends Model> {
 
@@ -85,14 +86,6 @@ public class EtcdSerde<T extends Model> {
         return result;
     }
 
-    public Map<String, String> serializeList(List<T> models) throws IllegalAccessException {
-        Map<String, String> result = new HashMap<>();
-        for (T model : models) {
-            result.putAll(serialize(model));
-        }
-        return result;
-    }
-
     public T deserialize(Map<String, String> input) throws IllegalAccessException {
         T result;
 
@@ -142,5 +135,15 @@ public class EtcdSerde<T extends Model> {
         }
 
         return result;
+    }
+
+    public List<T> deserializeList(List<Map<String, String>> input) throws IllegalAccessException {
+        return input.stream().map(map -> {
+            try {
+                return deserialize(map);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }).collect(Collectors.toList());
     }
 }
