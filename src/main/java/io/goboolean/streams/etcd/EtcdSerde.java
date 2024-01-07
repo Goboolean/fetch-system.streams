@@ -73,7 +73,6 @@ public class EtcdSerde<T extends Model> {
         for (Field field : cls.getDeclaredFields()) {
             Etcd annotation = field.getAnnotation(Etcd.class);
 
-            System.out.println("annotation value: " + annotation.value());
             if (annotation != null && !"id".equals(annotation.value())) {
                 field.setAccessible(true);
                 String fieldValue = String.valueOf(field.get(model));
