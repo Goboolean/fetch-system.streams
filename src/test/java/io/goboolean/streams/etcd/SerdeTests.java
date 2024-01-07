@@ -1,10 +1,10 @@
 package io.goboolean.streams.etcd;
 
+import lombok.Getter;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -14,21 +14,22 @@ public class SerdeTests {
     public record Group(Map<String, String> kvPair, Model model, Model data) {}
     public record TestCase(Map<String, String> kvPair, Group[] group) {}
 
+    @Getter
     public static class Product implements Model {
         @Etcd("id")
-        public String id;
+        private String id;
 
         @Etcd("platform")
-        public String platform;
+        private String platform;
 
         @Etcd("symbol")
-        public String symbol;
+        private String symbol;
 
         @Etcd("locale")
-        public String locale;
+        private String locale;
 
         @Etcd("market")
-        public String market;
+        private String market;
 
         public Product() {
         }
@@ -44,6 +45,19 @@ public class SerdeTests {
         @Override
         public String getName() {
             return "product";
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) return false;
+            if (!(obj instanceof Product)) return false;
+
+            Product other = (Product) obj;
+            return this.id.equals(other.id) &&
+                    this.platform.equals(other.platform) &&
+                    this.symbol.equals(other.symbol) &&
+                    this.locale.equals(other.locale) &&
+                    this.market.equals(other.market);
         }
     }
 
@@ -105,7 +119,20 @@ public class SerdeTests {
         for (TestCase testCase : testCases) {
             for (Group group : testCase.group()) {
                 Map<String, String> got = Serde.serialize(group.data);
+
                 assert got.equals(group.kvPair);
+            }
+        }
+    }
+
+    @Test
+    public void testDeserialize() throws IllegalAccessException {
+        for (TestCase testCase : testCases) {
+            for (Group group : testCase.group()) {
+                Map<String, String> kvPair = group.kvPair;
+                Serde.deserialize(kvPair, group.model);
+
+                assert ((Product)group.model()).equals((Product)group.data());
             }
         }
     }

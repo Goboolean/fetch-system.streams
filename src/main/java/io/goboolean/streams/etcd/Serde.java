@@ -111,10 +111,23 @@ public class Serde {
             String fieldName = parts[3];
             for (Field field : cls.getDeclaredFields()) {
                 Etcd annotation = field.getAnnotation(Etcd.class);
+
                 if (annotation != null && fieldName.equals(annotation.value())) {
                     field.setAccessible(true);
                     field.set(model, entry.getValue());
+
+                    System.out.println("annotation value: " + annotation.value());
+                    System.out.println("fieldName: " + fieldName);
                 }
+            }
+        }
+        System.out.println("id: " + id);
+
+        for (Field field : cls.getDeclaredFields()) {
+            Etcd annotation = field.getAnnotation(Etcd.class);
+            if (annotation != null && "id".equals(annotation.value())) {
+                field.setAccessible(true);
+                field.set(model, id);
             }
         }
     }
