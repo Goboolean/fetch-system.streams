@@ -1,6 +1,5 @@
 package io.goboolean.streams.etcd;
 
-import lombok.Getter;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -9,59 +8,12 @@ import java.util.List;
 import java.util.Map;
 
 @SpringBootTest
-public class SerdeTests {
+public class EtcdSerdeTests {
 
-    public record Group(Map<String, String> kvPair, Model model, Model data) {}
-    public record TestCase(Map<String, String> kvPair, Group[] group) {}
+    private record Group(Map<String, String> kvPair, Product data) {}
+    private record TestCase(Map<String, String> kvPair, Group[] group) {}
 
-    @Getter
-    public static class Product implements Model {
-        @Etcd("id")
-        private String id;
-
-        @Etcd("platform")
-        private String platform;
-
-        @Etcd("symbol")
-        private String symbol;
-
-        @Etcd("locale")
-        private String locale;
-
-        @Etcd("market")
-        private String market;
-
-        public Product() {
-        }
-
-        public Product(String id, String platform, String symbol, String locale, String market) {
-            this.id = id;
-            this.platform = platform;
-            this.symbol = symbol;
-            this.locale = locale;
-            this.market = market;
-        }
-
-        @Override
-        public String getName() {
-            return "product";
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) return false;
-            if (!(obj instanceof Product)) return false;
-
-            Product other = (Product) obj;
-            return this.id.equals(other.id) &&
-                    this.platform.equals(other.platform) &&
-                    this.symbol.equals(other.symbol) &&
-                    this.locale.equals(other.locale) &&
-                    this.market.equals(other.market);
-        }
-    }
-
-    public static TestCase[] testCases = new TestCase[]{
+    private static TestCase[] testCases = new TestCase[]{
             new TestCase(
                     Map.of(
                             "/product/test.goboolean.kor", "",
@@ -84,7 +36,6 @@ public class SerdeTests {
                                             "/product/test.goboolean.kor/locale", "kor",
                                             "/product/test.goboolean.kor/market", "stock"
                                     ),
-                                    new Product(),
                                     new Product("test.goboolean.kor", "kis", "goboolean", "kor", "stock")
                             ),
                             new Group(
@@ -95,17 +46,18 @@ public class SerdeTests {
                                             "/product/test.goboolean.eng/locale", "eng",
                                             "/product/test.goboolean.eng/market", "stock"
                                     ),
-                                    new Product(),
                                     new Product("test.goboolean.eng", "polygon", "gofalse", "eng", "stock")
                             )
                     }
             )
     };
 
+    private EtcdSerde<Product> serde = new EtcdSerde<>(Product.class);
+
     @Test
     public void testGroupByPrefix() throws IllegalArgumentException {
         for (TestCase testCase : testCases) {
-            List<Map<String, String>> got = Serde.groupByPrefix(testCase.kvPair);
+            List<Map<String, String>> got = serde.groupByPrefix(testCase.kvPair);
             assert got.size() == testCase.group().length;
 
             Arrays.stream(testCase.group()).forEach(group -> {
@@ -118,7 +70,7 @@ public class SerdeTests {
     public void testSerialize() throws IllegalAccessException {
         for (TestCase testCase : testCases) {
             for (Group group : testCase.group()) {
-                Map<String, String> got = Serde.serialize(group.data);
+                Map<String, String> got = serde.serialize(group.data);
 
                 assert got.equals(group.kvPair);
             }
@@ -130,9 +82,9 @@ public class SerdeTests {
         for (TestCase testCase : testCases) {
             for (Group group : testCase.group()) {
                 Map<String, String> kvPair = group.kvPair;
-                Serde.deserialize(kvPair, group.model);
+                Product result = serde.deserialize(kvPair);
 
-                assert ((Product)group.model()).equals((Product)group.data());
+                assert result.equals(group.data());
             }
         }
     }
@@ -141,11 +93,10 @@ public class SerdeTests {
     public void testSerializeDeserialize() throws IllegalAccessException {
         for (TestCase testCase : testCases) {
             for (Group group : testCase.group()) {
-                Map<String, String> kvPair = Serde.serialize(group.data);
+                Map<String, String> kvPair = serde.serialize(group.data);
                 assert kvPair.equals(group.kvPair);
 
-                Product got = new Product();
-                Serde.deserialize(kvPair, got);
+                Product got = serde.deserialize(kvPair);
                 assert got.equals(group.data);
             }
         }
@@ -154,8 +105,8 @@ public class SerdeTests {
     @Test
     public void testSerializeList() throws IllegalAccessException {
         for (TestCase testCase : testCases) {
-            List<Model> models = Arrays.asList(testCase.group()[0].data(), testCase.group()[1].data());
-            Map<String, String> got = Serde.serializeList(models);
+            List<Product> models = Arrays.asList(testCase.group()[0].data(), testCase.group()[1].data());
+            Map<String, String> got = serde.serializeList(models);
 
             assert got.equals(testCase.kvPair);
         }
