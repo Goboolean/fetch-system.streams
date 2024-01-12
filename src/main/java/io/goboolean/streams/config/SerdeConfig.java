@@ -1,33 +1,12 @@
 package io.goboolean.streams.config;
 
 import io.goboolean.streams.serde.AggregateSerde;
-import io.goboolean.streams.serde.ProtobufSerde;
 import io.goboolean.streams.serde.TradeSerde;
-import org.apache.kafka.common.serialization.Serde;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import  io.goboolean.streams.serde.ProtobufModel.AggregateProtobuf;
-import  io.goboolean.streams.serde.ProtobufModel.TradeProtobuf;
-
 @Configuration
 public class SerdeConfig {
-
-    @Bean
-    public Serde<TradeProtobuf> protobufTradeSerde() {
-        return new ProtobufSerde<>(
-                new ProtobufSerde.ProtobufSerializer<>(),
-                new ProtobufSerde.ProtobufDeserializer<>(TradeProtobuf.parser())
-        );
-    }
-
-    @Bean
-    public Serde<AggregateProtobuf> protobufAggregateSerde() {
-        return new ProtobufSerde<>(
-                new ProtobufSerde.ProtobufSerializer<>(),
-                new ProtobufSerde.ProtobufDeserializer<>(AggregateProtobuf.parser())
-        );
-    }
 
     @Bean
     public AggregateSerde.JsonSerializer jsonAggregateSerializer() {
