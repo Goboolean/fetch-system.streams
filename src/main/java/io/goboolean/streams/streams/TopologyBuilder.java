@@ -13,8 +13,6 @@ import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-
 public class TopologyBuilder {
 
     StreamsBuilder builder = new StreamsBuilder();
@@ -37,10 +35,7 @@ public class TopologyBuilder {
                         tradeSerde);
 
         KStream<Integer, Model.Aggregate> merged1sStream = sourceStream.transform(
-                () -> new TradeTransformer(
-                        new ArrayList<Model.Trade>(),
-                        new TimeTruncationer.OneSecTruncationer()
-                )
+                () -> new TradeTransformer(new StoreList(store_t.build()))
         );
 
 
@@ -54,7 +49,9 @@ public class TopologyBuilder {
                         aggregateSerde);
 
         KStream<Integer, Model.Aggregate> merged5sStream = merged1sStream.transform(
-                () -> new AggregateTransformer(new TimeTruncationer.FiveSecTruncationer())
+                () -> new AggregateTransformer(
+                        new StoreList(store_1s.build()),
+                        new TimeTruncationer.FiveSecTruncationer())
         );
 
 
@@ -68,7 +65,9 @@ public class TopologyBuilder {
                         aggregateSerde);
 
         KStream<Integer, Model.Aggregate> merged1mStream = merged5sStream.transform(
-                () -> new AggregateTransformer(new TimeTruncationer.OneMinTruncationer())
+                () -> new AggregateTransformer(
+                        new StoreList(store_5s.build()),
+                        new TimeTruncationer.OneMinTruncationer())
         );
 
 
@@ -82,7 +81,9 @@ public class TopologyBuilder {
                         aggregateSerde);
 
         KStream<Integer, Model.Aggregate> merged5mStream = merged1mStream.transform(
-                () -> new AggregateTransformer(new TimeTruncationer.FiveMinTruncationer())
+                () -> new AggregateTransformer(
+                        new StoreList(store_1m.build()),
+                        new TimeTruncationer.FiveMinTruncationer())
         );
 
 

@@ -4,7 +4,6 @@ package io.goboolean.streams.streams;
 import io.goboolean.streams.serde.Model;
 import org.apache.kafka.streams.KeyValue;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.ZonedDateTime;
@@ -15,6 +14,8 @@ import java.util.Arrays;
 public class AggregateTransformerTests {
 
     private AggregateTransformer aggregateTransformer;
+
+    private ArrayList<Model.Aggregate> store = new ArrayList<>();
 
     private ArrayList<Model.Aggregate> aggregates = new ArrayList<>(
             Arrays.asList(
@@ -49,11 +50,12 @@ public class AggregateTransformerTests {
                             ZonedDateTime.parse("2024-01-04T15:30:51Z")
                     )
             )
-
     );
 
     public AggregateTransformerTests() {
-        this.aggregateTransformer = new AggregateTransformer(new TimeTruncator.FiveSecTruncator());
+        this.aggregateTransformer = new AggregateTransformer(
+                store,
+                new TimeTruncationer.FiveSecTruncationer());
     }
 
     @Test
@@ -61,9 +63,13 @@ public class AggregateTransformerTests {
 
         KeyValue<Integer, Model.Aggregate> kv0 = aggregateTransformer.transform(0, aggregates.get(0));
         assert kv0 == null;
+        assert store.size() == 1;
+        assert store.get(0).equals(aggregates.get(0));
 
         KeyValue<Integer, Model.Aggregate> kv1 = aggregateTransformer.transform(0, aggregates.get(1));
         assert kv1 == null;
+        assert store.size() == 2;
+        assert store.get(1).equals(aggregates.get(1));
 
         KeyValue<Integer, Model.Aggregate> kv2 = aggregateTransformer.transform(0, aggregates.get(2));
         assert kv2.value.equals(new Model.Aggregate(
@@ -76,5 +82,7 @@ public class AggregateTransformerTests {
                 6,
                 ZonedDateTime.parse("2024-01-04T15:30:45Z")
         ));
+        assert store.size() == 1;
+        assert store.get(0).equals(aggregates.get(2));
     }
 }
