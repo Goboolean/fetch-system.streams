@@ -6,19 +6,19 @@ import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
 
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
+import java.util.List;
 
 public class AggregateTransformer implements Transformer<Integer, Model.Aggregate, KeyValue<Integer, Model.Aggregate>> {
     private ProcessorContext context;
 
-    private ArrayList<Model.Aggregate> aggregates = new ArrayList<>();
+    private List<Model.Aggregate> aggregates;
     private ZonedDateTime roundedTime;
 
-    private TimeTruncator.Truncator truncator;
+    private TimeTruncationer.Truncationer truncationer;
 
-    public AggregateTransformer(TimeTruncator.Truncator truncator) {
-        this.truncator = truncator;
+    public AggregateTransformer(List<Model.Aggregate> aggregates, TimeTruncationer.Truncationer truncationer) {
+        this.aggregates = aggregates;
+        this.truncationer = truncationer;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class AggregateTransformer implements Transformer<Integer, Model.Aggregat
 
     @Override
     public KeyValue<Integer, Model.Aggregate> transform(Integer key, Model.Aggregate value) {
-        ZonedDateTime givenRoundedTime = truncator.truncate(value.timestamp());
+        ZonedDateTime givenRoundedTime = truncationer.truncate(value.timestamp());
 
         if (roundedTime == null) { // Case when the first record is received
             roundedTime = givenRoundedTime;

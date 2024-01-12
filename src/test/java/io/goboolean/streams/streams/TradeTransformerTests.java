@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @SpringBootTest
 public class TradeTransformerTests {
@@ -17,10 +18,10 @@ public class TradeTransformerTests {
     private ArrayList<Model.Trade> store = new ArrayList<>();
 
     public TradeTransformerTests() {
-        this.tradeTransformer = new TradeTransformer(store, new TimeTruncationer.OneSecTruncationer());
+        this.tradeTransformer = new TradeTransformer(store);
     }
 
-    private ArrayList<Model.Trade> trades = new ArrayList<>(Arrays.asList(
+    private List<Model.Trade> trades = Arrays.asList(
             new Model.Trade(
                     "TRADE",
                     20,
@@ -39,10 +40,24 @@ public class TradeTransformerTests {
                     1,
                     ZonedDateTime.parse("2024-01-04T15:30:46.2Z")
             )
-    ));
+    );
+
+    private List<Model.Aggregate> result = Arrays.asList(
+            new Model.Aggregate(
+                    "TRADE",
+                    20,
+                    10,
+                    20,
+                    10,
+                    15,
+                    2,
+                    ZonedDateTime.parse("2024-01-04T15:30:45Z")
+            )
+    );
 
     @Test
     public void testTransformScenario() {
+
         KeyValue<Integer, Model.Aggregate> kv0 = tradeTransformer.transform(0, trades.get(0));
         assert kv0 == null;
         assert store.size() == 1;
@@ -54,16 +69,7 @@ public class TradeTransformerTests {
         assert store.get(1).equals(trades.get(1));
 
         KeyValue<Integer, Model.Aggregate> kv2 = tradeTransformer.transform(0, trades.get(2));
-        assert kv2.value.equals(new Model.Aggregate(
-                "TRADE",
-                20,
-                10,
-                20,
-                10,
-                15,
-                2,
-                ZonedDateTime.parse("2024-01-04T15:30:45Z")
-        ));
+        assert kv2.value.equals(result.get(0));
         assert store.size() == 1;
         assert store.get(0).equals(trades.get(2));
     }
