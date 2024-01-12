@@ -13,8 +13,11 @@ import java.util.Arrays;
 public class TradeTransformerTests {
 
     private TradeTransformer tradeTransformer;
+
+    private ArrayList<Model.Trade> store = new ArrayList<>();
+
     public TradeTransformerTests() {
-        this.tradeTransformer = new TradeTransformer();
+        this.tradeTransformer = new TradeTransformer(store, new TimeTruncationer.OneSecTruncationer());
     }
 
     private ArrayList<Model.Trade> trades = new ArrayList<>(Arrays.asList(
@@ -42,9 +45,13 @@ public class TradeTransformerTests {
     public void testTransformScenario() {
         KeyValue<Integer, Model.Aggregate> kv0 = tradeTransformer.transform(0, trades.get(0));
         assert kv0 == null;
+        assert store.size() == 1;
+        assert store.get(0).equals(trades.get(0));
 
         KeyValue<Integer, Model.Aggregate> kv1 = tradeTransformer.transform(0, trades.get(1));
         assert kv1 == null;
+        assert store.size() == 2;
+        assert store.get(1).equals(trades.get(1));
 
         KeyValue<Integer, Model.Aggregate> kv2 = tradeTransformer.transform(0, trades.get(2));
         assert kv2.value.equals(new Model.Aggregate(
@@ -57,5 +64,7 @@ public class TradeTransformerTests {
                 2,
                 ZonedDateTime.parse("2024-01-04T15:30:45Z")
         ));
+        assert store.size() == 1;
+        assert store.get(0).equals(trades.get(2));
     }
 }

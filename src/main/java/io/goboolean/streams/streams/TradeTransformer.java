@@ -4,17 +4,44 @@ import io.goboolean.streams.serde.Model;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
+import org.apache.kafka.streams.state.KeyValueStore;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class TradeTransformer implements Transformer<Integer, Model.Trade, KeyValue<Integer, Model.Aggregate>> {
     private ProcessorContext context;
 
-    private ArrayList<Model.Trade> trades = new ArrayList<>();
+    public class StoreList extends ArrayList<Model.Trade> implements List<Model.Trade>  {
+
+        private KeyValueStore<Integer, Model.Trade> stateStore;
+
+        public StoreList(KeyValueStore<Integer, Model.Trade> stateStore) {
+            this.stateStore = stateStore;
+            stateStore.all().forEachRemaining(kv -> super.add(kv.value));
+        }
+
+        public boolean add(Model.Trade trade) {
+            stateStore.put(trade.hashCode(), trade);
+            return super.add(trade);
+        }
+
+        public void clear() {
+            stateStore.all().forEachRemaining(kv -> stateStore.delete(kv.key));
+            super.clear();
+        }
+    }
+
+    private List<Model.Trade> trades;
     private ZonedDateTime roundedTime;
 
-    private TimeTruncator.Truncator truncator = new TimeTruncator.OneSecTruncator();
+    private TimeTruncationer.Truncationer truncationer = new TimeTruncationer.OneSecTruncationer();
+
+    public TradeTransformer(List<Model.Trade> trades, TimeTruncationer.Truncationer truncationer) {
+        this.trades = trades;
+        this.truncationer = truncationer;
+    }
 
     @Override
     public void init(ProcessorContext context) {
@@ -23,7 +50,8 @@ public class TradeTransformer implements Transformer<Integer, Model.Trade, KeyVa
 
     @Override
     public KeyValue<Integer, Model.Aggregate> transform(Integer key, Model.Trade value) {
-        ZonedDateTime givenRoundedTime = truncator.truncate(value.timestamp());
+        ZonedDateTime givenRoundedTime = truncationer.truncate(value.timestamp());
+
         if (roundedTime == null) { // Case when the first record is received
             roundedTime = givenRoundedTime;
             trades.add(value);
