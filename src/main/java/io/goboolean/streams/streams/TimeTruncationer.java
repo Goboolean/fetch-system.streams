@@ -3,20 +3,20 @@ package io.goboolean.streams.streams;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
-public class TimeTruncator {
+public class TimeTruncationer {
 
-    public abstract static class AbstractTruncator {
+    public abstract static class AbstractTruncationer {
         public abstract ZonedDateTime truncate(ZonedDateTime time);
     }
 
-    public interface Truncator {
+    public interface Truncationer {
         ZonedDateTime truncate(ZonedDateTime time);
     }
 
-    public static class OneSecTruncator extends AbstractTruncator implements Truncator{
+    public static class OneSecTruncationer extends AbstractTruncationer implements Truncationer{
         private int unitValue;
 
-        public OneSecTruncator() {
+        public OneSecTruncationer() {
             this.unitValue = 1;
         }
         @Override
@@ -26,10 +26,10 @@ public class TimeTruncator {
         }
     }
 
-    public static class FiveSecTruncator extends AbstractTruncator implements Truncator {
+    public static class FiveSecTruncationer extends AbstractTruncationer implements Truncationer {
         private int unitValue;
 
-        public FiveSecTruncator() {
+        public FiveSecTruncationer() {
             this.unitValue = 5;
         }
         @Override
@@ -39,10 +39,10 @@ public class TimeTruncator {
         }
     }
 
-    public static class OneMinTruncator extends AbstractTruncator implements Truncator{
+    public static class OneMinTruncationer extends AbstractTruncationer implements Truncationer{
         private int unitValue;
 
-        public OneMinTruncator() {
+        public OneMinTruncationer() {
             this.unitValue = 1;
         }
         @Override
@@ -52,10 +52,10 @@ public class TimeTruncator {
         }
     }
 
-    public static class FiveMinTruncator extends AbstractTruncator implements Truncator {
+    public static class FiveMinTruncationer extends AbstractTruncationer implements Truncationer {
         private int unitValue;
 
-        public FiveMinTruncator() {
+        public FiveMinTruncationer() {
             this.unitValue = 5;
         }
         @Override
