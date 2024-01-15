@@ -1,6 +1,7 @@
 package io.goboolean.streams.serde;
 
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -42,14 +43,7 @@ public class AggregateSerdeTests {
         byte[] byteData = jsonSerializer.serialize("test.topic", aggregate);
         Model.Aggregate newAggregate = jsonDeserializer.deserialize("test.topic", byteData);
 
-        assert newAggregate.symbol().equals(aggregate.symbol());
-        assert newAggregate.open() == aggregate.open();
-        assert newAggregate.close() == aggregate.close();
-        assert newAggregate.high() == aggregate.high();
-        assert newAggregate.low() == aggregate.low();
-        assert newAggregate.average() == aggregate.average();
-        assert newAggregate.volume() == aggregate.volume();
-        assert newAggregate.timestamp().equals(aggregate.timestamp());
+        Assertions.assertEquals(newAggregate, aggregate);
     }
 
     @Test
@@ -67,11 +61,6 @@ public class AggregateSerdeTests {
         byte[] byteData = protobufSerializer.serialize("test.topic", aggregate);
         ProtobufModel.AggregateProtobuf newAggregate = protobufDeserializer.deserialize("test.topic", byteData);
 
-        assert newAggregate.getOpen() == aggregate.getOpen();
-        assert newAggregate.getClosed() == aggregate.getClosed();
-        assert newAggregate.getMax() == aggregate.getMax();
-        assert newAggregate.getMin() == aggregate.getMin();
-        assert newAggregate.getVolume() == aggregate.getVolume();
-        assert newAggregate.getTimestamp() == aggregate.getTimestamp();
+        Assertions.assertEquals(newAggregate, aggregate);
     }
 }

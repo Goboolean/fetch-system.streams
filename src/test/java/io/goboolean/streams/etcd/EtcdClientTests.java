@@ -1,6 +1,7 @@
 package io.goboolean.streams.etcd;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,9 +35,9 @@ public class EtcdClientTests {
 
         List<Product> products = etcdClient.getAllProducts();
 
-        assert products.size() == 4;
+        Assertions.assertEquals(4, products.size());
         for (Product product : products) {
-            assert Arrays.stream(this.products).anyMatch(p -> p.equals(product));
+            Assertions.assertTrue(Arrays.asList(this.products).contains(product));
         }
     }
 }
