@@ -2,6 +2,7 @@ package io.goboolean.streams.config;
 
 import io.goboolean.streams.serde.JsonSerde;
 import io.goboolean.streams.serde.Model;
+import io.goboolean.streams.streams.KafkaStreamsService;
 import io.goboolean.streams.streams.TopologyBuilder;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.streams.StreamsConfig;
@@ -15,6 +16,10 @@ import java.util.Properties;
 public class KafkaStreamsConfig {
 
     @Value("${kafka.bootstrap-servers}")
+    private String bootstrapServers;
+
+    @Value("${kafka.application-id-config}")
+    private String applicationIdConfig;
 
     @Bean
     public Serde<Model.Trade> tradeSerde() {
@@ -29,13 +34,18 @@ public class KafkaStreamsConfig {
     @Bean
     public Properties props() {
         Properties props = new Properties();
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "test");
-        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
+        props.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationIdConfig);
+        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         return props;
     }
 
     @Bean
     public TopologyBuilder topologyBuilder() {
         return new TopologyBuilder();
+    }
+
+    @Bean
+    public KafkaStreamsService kafkaStreamsService() {
+        return new KafkaStreamsService();
     }
 }

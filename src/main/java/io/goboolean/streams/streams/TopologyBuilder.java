@@ -1,6 +1,7 @@
 package io.goboolean.streams.streams;
 
 import io.goboolean.streams.serde.Model;
+import jakarta.annotation.PostConstruct;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -21,6 +22,11 @@ public class TopologyBuilder {
     Serde<Model.Trade> tradeSerde;
     @Autowired
     Serde<Model.Aggregate> aggregateSerde;
+
+    @PostConstruct
+    public void createDummyTopology() {
+        KStream<Integer, Model.Trade> sourceStream = builder.stream("dummy-topic", Consumed.with(Serdes.Integer(), tradeSerde));
+    }
 
     public void addStreams(String id) {
 

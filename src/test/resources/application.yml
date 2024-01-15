@@ -1,6 +1,6 @@
 spring:
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    bootstrap-servers: mulmuri.dev:9092 #${KAFKA_BOOTSTRAP_SERVERS}
     consumer:
       group-id: myGroup
       key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
@@ -8,4 +8,8 @@ spring:
       auto-offset-reset: earliest
 
 etcd:
-  endpoints: ${ETCD_ENDPOINTS}
+  endpoints: mulmuri.dev:2379  #${ETCD_ENDPOINTS}
+
+kafka:
+  bootstrap-servers: mulmuri.dev:9092 #${KAFKA_BOOTSTRAP_SERVERS}
+  application-id-config: KAFKA_STREAMS_APP
