@@ -10,8 +10,8 @@ public class StoreList<T> extends ArrayList<T> implements List<T> {
     private KeyValueStore<Integer, T> stateStore;
 
     public StoreList(KeyValueStore<Integer, T> stateStore) {
+        super();
         this.stateStore = stateStore;
-        stateStore.all().forEachRemaining(kv -> super.add(kv.value));
     }
 
     public boolean add(T data) {

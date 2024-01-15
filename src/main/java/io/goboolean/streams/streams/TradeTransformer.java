@@ -6,23 +6,27 @@ import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TradeTransformer implements Transformer<Integer, Model.Trade, KeyValue<Integer, Model.Aggregate>> {
     private ProcessorContext context;
 
-    private List<Model.Trade> trades;
+    private List<Model.Trade> trades = new ArrayList<>();
+    private final String storeName;
+
     private ZonedDateTime roundedTime;
 
     private TimeTruncationer.Truncationer truncationer = new TimeTruncationer.OneSecTruncationer();
 
-    public TradeTransformer(List<Model.Trade> trades) {
-        this.trades = trades;
+    public TradeTransformer(String storeName) {
+        this.storeName = storeName;
     }
 
     @Override
     public void init(ProcessorContext context) {
         this.context = context;
+        this.trades = new StoreList<>(context.getStateStore(storeName));
     }
 
     @Override
