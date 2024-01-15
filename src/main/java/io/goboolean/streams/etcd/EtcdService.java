@@ -20,14 +20,14 @@ import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-public class EtcdClient {
+public class EtcdService {
 
     private final Client client;
 
     private EtcdSerde<Product> productSerde = new EtcdSerde<>(Product.class);
 
     @Autowired
-    public EtcdClient(Properties props) {
+    public EtcdService(Properties props) {
         String[] connections = {props.getProperty("endpoints")};
 
         this.client = Client.builder()

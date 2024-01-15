@@ -1,6 +1,6 @@
 package io.goboolean.streams.config;
 
-import io.goboolean.streams.etcd.EtcdClient;
+import io.goboolean.streams.etcd.EtcdService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +21,7 @@ public class EtcdConfig {
     }
 
     @Bean
-    public EtcdClient etcdClient() {
-        return new EtcdClient(etcdProps());
+    public EtcdService etcdClient() {
+        return new EtcdService(etcdProps());
     }
 }

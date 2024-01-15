@@ -10,10 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 
 @SpringBootTest
-public class EtcdClientTests {
+public class EtcdServiceTests {
 
     @Autowired
-    private EtcdClient etcdClient;
+    private EtcdService etcdService;
 
     private Product[] products = new Product[] {
             new Product("test.goboolean.kor", "kis", "goboolean", "kor", "stock"),
@@ -24,16 +24,16 @@ public class EtcdClientTests {
 
     @AfterEach
     public void cleanup() {
-        etcdClient.deleteAllProducts();
+        etcdService.deleteAllProducts();
     }
 
     @Test
     public void insertAndGetProducts() {
         for (Product product : products) {
-            etcdClient.insertProduct(product);
+            etcdService.insertProduct(product);
         }
 
-        List<Product> products = etcdClient.getAllProducts();
+        List<Product> products = etcdService.getAllProducts();
 
         Assertions.assertEquals(4, products.size());
         for (Product product : products) {
