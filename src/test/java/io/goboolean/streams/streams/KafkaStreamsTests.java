@@ -1,6 +1,6 @@
 package io.goboolean.streams.streams;
 
-import io.goboolean.streams.etcd.EtcdClient;
+import io.goboolean.streams.etcd.EtcdService;
 import io.goboolean.streams.etcd.Product;
 import io.goboolean.streams.kafka.KafkaTradeProducerService;
 import org.junit.jupiter.api.AfterEach;
@@ -16,7 +16,7 @@ public class KafkaStreamsTests {
     private KafkaStreamsService kafkaStreamsService;
 
     @Autowired
-    private EtcdClient etcdClient;
+    private EtcdService etcdClient;
 
     @Autowired
     private KafkaTradeProducerService kafkaTradeProducerService;
