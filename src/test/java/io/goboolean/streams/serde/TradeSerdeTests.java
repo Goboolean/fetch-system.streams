@@ -1,5 +1,6 @@
 package io.goboolean.streams.serde;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,10 +35,7 @@ public class TradeSerdeTests {
         byte[] byteData = jsonSerializer.serialize("test.topic", trade);
         Model.Trade newTrade = jsonDeserializer.deserialize("test.topic", byteData);
 
-        assert newTrade.symbol().equals(trade.symbol());
-        assert newTrade.price() == trade.price();
-        assert newTrade.volume() == trade.volume();
-        assert newTrade.timestamp().equals(trade.timestamp());
+        Assertions.assertEquals(newTrade, trade);
     }
 
     @Test
@@ -52,8 +50,6 @@ public class TradeSerdeTests {
         byte[] byteData = protobufSerializer.serialize("test.topic", trade);
         ProtobufModel.TradeProtobuf newTrade = protobufDeserializer.deserialize("test.topic", byteData);
 
-        assert newTrade.getPrice() == trade.getPrice();
-        assert newTrade.getSize() == trade.getSize();
-        assert newTrade.getTimestamp() == trade.getTimestamp();
+        Assertions.assertEquals(newTrade, trade);
     }
 }

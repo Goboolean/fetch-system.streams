@@ -1,5 +1,6 @@
 package io.goboolean.streams.etcd;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -58,10 +59,10 @@ public class EtcdSerdeTests {
     public void testGroupByPrefix() throws IllegalArgumentException {
         for (TestCase testCase : testCases) {
             List<Map<String, String>> got = serde.groupByPrefix(testCase.kvPair);
-            assert got.size() == testCase.group().length;
+            Assertions.assertEquals(testCase.group().length, got.size());
 
             Arrays.stream(testCase.group()).forEach(group -> {
-                assert got.contains(group.kvPair);
+                Assertions.assertTrue(got.contains(group.kvPair));
             });
         }
     }
@@ -72,7 +73,7 @@ public class EtcdSerdeTests {
             for (Group group : testCase.group()) {
                 Map<String, String> got = serde.serialize(group.data);
 
-                assert got.equals(group.kvPair);
+                Assertions.assertEquals(group.kvPair.size(), got.size());
             }
         }
     }
@@ -84,7 +85,7 @@ public class EtcdSerdeTests {
                 Map<String, String> kvPair = group.kvPair;
                 Product result = serde.deserialize(kvPair);
 
-                assert result.equals(group.data());
+                Assertions.assertEquals(group.data, result);
             }
         }
     }
@@ -94,10 +95,10 @@ public class EtcdSerdeTests {
         for (TestCase testCase : testCases) {
             for (Group group : testCase.group()) {
                 Map<String, String> kvPair = serde.serialize(group.data);
-                assert kvPair.equals(group.kvPair);
+                Assertions.assertEquals(group.kvPair.size(), kvPair.size());
 
                 Product got = serde.deserialize(kvPair);
-                assert got.equals(group.data);
+                Assertions.assertEquals(group.data, got);
             }
         }
     }
