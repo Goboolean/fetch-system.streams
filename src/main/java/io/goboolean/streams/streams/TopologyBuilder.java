@@ -12,8 +12,6 @@ import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.state.Stores;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.Duration;
-
 public class TopologyBuilder {
 
     StreamsBuilder builder = new StreamsBuilder();
@@ -54,8 +52,7 @@ public class TopologyBuilder {
                         aggregateSerde));
 
         KStream<Integer, Model.Aggregate> merged5sStream = merged1sStream.transform(
-                () -> new AggregateTransformer(
-                        topic_1s, new TimeTruncationer.FiveSecTruncationer(), Duration.ofSeconds(1)), topic_1s);
+                () -> new AggregateTransformer.OneSec(topic_1s), topic_1s);
 
 
         String topic_5s = String.format("%s.%s", id, "5s");
@@ -68,9 +65,7 @@ public class TopologyBuilder {
                         aggregateSerde));
 
         KStream<Integer, Model.Aggregate> merged1mStream = merged5sStream.transform(
-                () -> new AggregateTransformer(
-                        topic_5s, new TimeTruncationer.OneMinTruncationer(), Duration.ofSeconds(5)), topic_5s);
-
+                () -> new AggregateTransformer.FiveSec(topic_5s), topic_5s);
 
         String topic_1m = String.format("%s.%s", id, "1m");
         merged1mStream.to(topic_1m, Produced.with(Serdes.Integer(), aggregateSerde));
@@ -82,9 +77,7 @@ public class TopologyBuilder {
                         aggregateSerde));
 
         KStream<Integer, Model.Aggregate> merged5mStream = merged1mStream.transform(
-                () -> new AggregateTransformer(
-                        topic_1m, new TimeTruncationer.FiveMinTruncationer(), Duration.ofMinutes(1)), topic_1m);
-
+                () -> new AggregateTransformer.OneMin(topic_1m), topic_1m);
 
         String topic_5m = String.format("%s.%s", id, "5m");
         merged5mStream.to(topic_5m, Produced.with(Serdes.Integer(), aggregateSerde));

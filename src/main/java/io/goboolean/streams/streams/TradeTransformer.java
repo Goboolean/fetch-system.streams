@@ -1,6 +1,8 @@
 package io.goboolean.streams.streams;
 
 import io.goboolean.streams.serde.Model;
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.metrics.LongCounter;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
@@ -18,9 +20,15 @@ public class TradeTransformer implements Transformer<Integer, Model.Trade, KeyVa
     private ZonedDateTime roundedTime;
 
     private TimeTruncationer.Truncationer truncationer = new TimeTruncationer.OneSecTruncationer();
+    private LongCounter counter;
 
     public TradeTransformer(String storeName) {
         this.storeName = storeName;
+
+        this.counter = GlobalOpenTelemetry.getMeterProvider()
+                .get("fetch-system.streams")
+                .counterBuilder("fetch-system.streams.received.trade")
+                .build();
     }
 
     @Override
@@ -31,6 +39,8 @@ public class TradeTransformer implements Transformer<Integer, Model.Trade, KeyVa
 
     @Override
     public KeyValue<Integer, Model.Aggregate> transform(Integer key, Model.Trade value) {
+        counter.add(1);
+
         ZonedDateTime givenRoundedTime = truncationer.truncate(value.timestamp());
 
         if (roundedTime == null) { // Case when the first record is received
