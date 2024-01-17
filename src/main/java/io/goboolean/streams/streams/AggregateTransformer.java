@@ -34,7 +34,7 @@ public class AggregateTransformer implements Transformer<Integer, Model.Aggregat
         public OneSec(String storeName) {
             super(
                     storeName,
-                    new TimeTruncationer.OneSecTruncationer(),
+                    new TimeTruncationer.FiveSecTruncationer(),
                     Duration.ofSeconds(1),
                     GlobalOpenTelemetry.getMeterProvider()
                             .get("fetch-system.streams")
@@ -48,7 +48,7 @@ public class AggregateTransformer implements Transformer<Integer, Model.Aggregat
         public FiveSec(String storeName) {
             super(
                     storeName,
-                    new TimeTruncationer.FiveSecTruncationer(),
+                    new TimeTruncationer.OneMinTruncationer(),
                     Duration.ofSeconds(5),
                     GlobalOpenTelemetry.getMeterProvider()
                             .get("fetch-system.streams")
