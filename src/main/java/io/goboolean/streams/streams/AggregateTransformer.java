@@ -1,6 +1,8 @@
 package io.goboolean.streams.streams;
 
 import io.goboolean.streams.serde.Model;
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.metrics.LongCounter;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Transformer;
 import org.apache.kafka.streams.processor.ProcessorContext;
@@ -19,11 +21,55 @@ public class AggregateTransformer implements Transformer<Integer, Model.Aggregat
     private TimeTruncationer.Truncationer truncationer;
     private ZonedDateTime roundedTime;
     private Duration duration;
+    private LongCounter counter;
 
-    public AggregateTransformer(String storeName, TimeTruncationer.Truncationer truncationer, Duration duration) {
+    public AggregateTransformer(String storeName, TimeTruncationer.Truncationer truncationer, Duration duration, LongCounter counter) {
         this.storeName = storeName;
         this.truncationer = truncationer;
         this.duration = duration;
+        this.counter = counter;
+    }
+
+    public static class OneSec extends AggregateTransformer {
+        public OneSec(String storeName) {
+            super(
+                    storeName,
+                    new TimeTruncationer.OneSecTruncationer(),
+                    Duration.ofSeconds(1),
+                    GlobalOpenTelemetry.getMeterProvider()
+                            .get("fetch-system.streams")
+                            .counterBuilder("fetch-system.streams.received.aggregate")
+                            .build()
+            );
+        }
+    }
+
+    public static class FiveSec extends AggregateTransformer {
+        public FiveSec(String storeName) {
+            super(
+                    storeName,
+                    new TimeTruncationer.FiveSecTruncationer(),
+                    Duration.ofSeconds(5),
+                    GlobalOpenTelemetry.getMeterProvider()
+                            .get("fetch-system.streams")
+                            .counterBuilder("fetch-system.streams.received.aggregate")
+                            .build()
+            );
+        }
+    }
+
+    public static class OneMin extends AggregateTransformer {
+        public OneMin(String storeName) {
+            super(
+                    storeName,
+                    new TimeTruncationer.FiveMinTruncationer(),
+                    Duration.ofSeconds(10),
+                    GlobalOpenTelemetry.getMeterProvider()
+                            .get("fetch-system.streams")
+                            .counterBuilder("fetch-system.streams.received.aggregate")
+                            .build()
+            );
+        }
     }
 
     @Override
@@ -34,6 +80,12 @@ public class AggregateTransformer implements Transformer<Integer, Model.Aggregat
 
     @Override
     public KeyValue<Integer, Model.Aggregate> transform(Integer key, Model.Aggregate value) {
+        counter.add(1);
+
+        GlobalOpenTelemetry.getMeterProvider()
+                .get("fetch-system.streams")
+                .counterBuilder("fetch-system.streams.received.aggregate")
+                .build();
 
         if (roundedTime == null) { // Case when the first record is received
             roundedTime = truncationer.truncate(value.timestamp());

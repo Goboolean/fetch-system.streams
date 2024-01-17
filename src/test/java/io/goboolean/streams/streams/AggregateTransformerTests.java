@@ -86,7 +86,7 @@ public class AggregateTransformerTests {
     public AggregateTransformerTests() {
         this.aggregateTransformer = new AggregateTransformer(
                 "",
-                new TimeTruncationer.FiveSecTruncationer(), Duration.ofSeconds(1));
+                new TimeTruncationer.FiveSecTruncationer(), Duration.ofSeconds(1), null);
     }
 
     @Test

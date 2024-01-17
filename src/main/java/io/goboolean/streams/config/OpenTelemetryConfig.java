@@ -98,15 +98,6 @@ public class OpenTelemetryConfig {
                 .build();
     }
 
-    @Bean(name = "fetch-system.streams.exported.1s")
-    public LongCounter exported1sAggregateCounter(OpenTelemetry openTelemetry) {
-        return openTelemetry
-                .getMeter("fetch-system.streams")
-                .counterBuilder("fetch-system.streams.exported.1s-aggregate")
-                .setDescription("")
-                .build();
-    }
-
     @Bean(name = "fetch-system.streams.received.5s")
     public LongCounter received5sAggregateCounter(OpenTelemetry openTelemetry) {
         return openTelemetry
@@ -116,29 +107,11 @@ public class OpenTelemetryConfig {
                 .build();
     }
 
-    @Bean(name = "fetch-system.streams.exported.5s")
-    public LongCounter received1mAggregateCounter(OpenTelemetry openTelemetry) {
-        return openTelemetry
-                .getMeter("fetch-system.streams")
-                .counterBuilder("fetch-system.streams.received.1m-aggregate")
-                .setDescription("")
-                .build();
-    }
-
     @Bean(name = "fetch-system.streams.received.1m")
     public LongCounter exported1mAggregateCounter(OpenTelemetry openTelemetry) {
         return openTelemetry
                 .getMeter("fetch-system.streams")
                 .counterBuilder("fetch-system.streams.exported.1m-aggregate")
-                .setDescription("")
-                .build();
-    }
-
-    @Bean(name = "fetch-system.streams.received.5m")
-    public LongCounter received5mAggregateCounter(OpenTelemetry openTelemetry) {
-        return openTelemetry
-                .getMeter("fetch-system.streams")
-                .counterBuilder("fetch-system.streams.received.5m-aggregate")
                 .setDescription("")
                 .build();
     }
