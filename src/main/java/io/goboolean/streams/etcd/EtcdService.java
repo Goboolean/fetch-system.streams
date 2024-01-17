@@ -7,10 +7,16 @@ import io.etcd.jetcd.Txn;
 import io.etcd.jetcd.kv.DeleteResponse;
 import io.etcd.jetcd.kv.GetResponse;
 import io.etcd.jetcd.kv.TxnResponse;
+import io.etcd.jetcd.maintenance.StatusResponse;
 import io.etcd.jetcd.op.Op;
 import io.etcd.jetcd.options.DeleteOption;
 import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.PutOption;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.charset.StandardCharsets;
@@ -22,18 +28,46 @@ import java.util.stream.Collectors;
 
 public class EtcdService {
 
-    private final Client client;
+    private static final Logger logger = LogManager.getLogger(EtcdService.class);
 
-    private EtcdSerde<Product> productSerde = new EtcdSerde<>(Product.class);
+    private final Client client;
+    private final String endpoint;
+
+    private final EtcdSerde<Product> productSerde = new EtcdSerde<>(Product.class);
 
     @Autowired
     public EtcdService(Properties props) {
-        String[] connections = {props.getProperty("endpoints")};
-
+        this.endpoint = props.getProperty("endpoints");
         this.client = Client.builder()
-                .target(props.getProperty("endpoints"))
-                //.endpoints(connections)
+                .target(endpoint)
                 .build();
+    }
+
+    @PostConstruct
+    public void ping() {
+        try {
+            StatusResponse status = client.getMaintenanceClient().statusMember(endpoint).get();
+
+            ThreadContext.put("status", status.toString());
+        } catch (Exception e) {
+            ThreadContext.put("error", e.toString());
+            logger.error("Etcd ping failed");
+
+            throw new RuntimeException(e);
+        } finally {
+            logger.info("Etcd ping successfully completed");
+        }
+    }
+
+    @PreDestroy
+    public void close() {
+        try {
+            client.close();
+        } catch (Exception e) {
+            logger.error("Etcd close failed");
+        } finally {
+            logger.info("Etcd successfully closed");
+        }
     }
 
     public Product getProduct(String id) {
@@ -41,7 +75,7 @@ public class EtcdService {
 
         CompletableFuture<GetResponse> getFuture = client.getKVClient().get(
                 ByteSequence.from(prefix.getBytes(StandardCharsets.UTF_8)),
-                GetOption.newBuilder().withRange(
+                GetOption.builder().withRange(
                         ByteSequence.from(ByteString.copyFromUtf8(prefix).concat(ByteString.copyFrom(new byte[]{0}))))
                         .build()
                 );
@@ -67,10 +101,9 @@ public class EtcdService {
         String prefix = "/product/";
         CompletableFuture<GetResponse> getFuture = client.getKVClient().get(
                 ByteSequence.from(prefix.getBytes(StandardCharsets.UTF_8)),
-                GetOption.newBuilder().withPrefix(
+                GetOption.builder().withPrefix(
                         ByteSequence.from(prefix.getBytes(StandardCharsets.UTF_8)))
-                        .build()
-        );
+                        .build());
 
         try {
             Map<String, String> result = getFuture.get()
@@ -78,9 +111,7 @@ public class EtcdService {
                     .collect(
                             Collectors.toMap(
                                     kv -> kv.getKey().toString(StandardCharsets.UTF_8),
-                                    kv -> kv.getValue().toString(StandardCharsets.UTF_8)
-                            )
-                    );
+                                    kv -> kv.getValue().toString(StandardCharsets.UTF_8)));
 
             return productSerde.groupByPrefix(result).stream()
                     .map(product -> {
@@ -107,8 +138,7 @@ public class EtcdService {
                 txn.Then(Op.put(
                         ByteSequence.from(key.getBytes(StandardCharsets.UTF_8)),
                         ByteSequence.from(value.getBytes(StandardCharsets.UTF_8)),
-                        PutOption.DEFAULT)
-                );
+                        PutOption.DEFAULT));
             });
 
             CompletableFuture<TxnResponse> txnResponse = txn.commit();
