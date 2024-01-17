@@ -13,3 +13,8 @@ etcd:
 kafka:
   bootstrap-servers: mulmuri.dev:9092 #${KAFKA_BOOTSTRAP_SERVERS}
   application-id-config: KAFKA_STREAMS_APP
+
+open-telemetry:
+  endpoint: http://mulmuri.dev:4317
+  service-name: fetch-system.streams
+  service-version: 0.1.0
