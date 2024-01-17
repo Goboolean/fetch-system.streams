@@ -1,0 +1,18 @@
+Configuration:
+  status: WARN
+  packages: io.opentelemetry.instrumentation.log4j.appender.v2_17
+  Appenders:
+    Console:
+      name: Console
+      target: SYSTEM_OUT
+      PatternLayout:
+        pattern: "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} trace_id: %X{trace_id} span_id: %X{span_id} trace_flags: %X{trace_flags} - %msg%n"
+    OpenTelemetry:
+      name: OpenTelemetryAppender
+  Loggers:
+    Root:
+      AppenderRef:
+        - ref: OpenTelemetryAppender
+          level: All
+        - ref: Console
+          level: All
