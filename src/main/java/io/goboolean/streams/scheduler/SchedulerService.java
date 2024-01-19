@@ -15,7 +15,7 @@ import java.util.List;
 @Component
 public class SchedulerService {
 
-    private static final Logger logger = LogManager.getLogger(EtcdService.class);
+    private static final Logger logger = LogManager.getLogger(SchedulerService.class);
 
     @Autowired
     private EtcdService etcdService;
@@ -25,18 +25,25 @@ public class SchedulerService {
 
     @PostConstruct
     public void run() {
-        List<Product> products = etcdService.getAllProducts();
 
-        ThreadContext.put("number", String.valueOf(products.size()));
-        logger.info("Products fetched");
+        try {
+            List<Product> products = etcdService.getAllProducts();
 
-        products.forEach(product -> {
-            kafkaStreamsService.addStreams(product.getId());
-        });
+            ThreadContext.put("number", String.valueOf(products.size()));
+            logger.info("Products fetched");
 
-        kafkaStreamsService.run();
+            products.forEach(product -> {
+                kafkaStreamsService.addStreams(product.getId());
+            });
 
-        logger.info("Kafka Streams started");
-        ThreadContext.clearAll();
+            kafkaStreamsService.run();
+            logger.info("Kafka Streams started");
+
+        } catch (Exception e) {
+            logger.error("An error occurred during scheduling", e);
+            throw new RuntimeException(e);
+        } finally {
+            ThreadContext.clearAll();
+        }
     }
 }

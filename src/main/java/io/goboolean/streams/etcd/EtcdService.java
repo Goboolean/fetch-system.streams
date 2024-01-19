@@ -12,7 +12,6 @@ import io.etcd.jetcd.op.Op;
 import io.etcd.jetcd.options.DeleteOption;
 import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.PutOption;
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,7 +42,6 @@ public class EtcdService {
                 .build();
     }
 
-    @PostConstruct
     public void ping() {
         try {
             StatusResponse status = client.getMaintenanceClient().statusMember(endpoint).get();
@@ -56,6 +54,7 @@ public class EtcdService {
             throw new RuntimeException(e);
         } finally {
             logger.info("Etcd ping successfully completed");
+            ThreadContext.clearAll();
         }
     }
 
