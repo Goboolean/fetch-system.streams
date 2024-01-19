@@ -1,17 +1,26 @@
-logging:
-  level:
-    org.springframework: DEBUG
-    org.apache.kafka: DEBUG
-
 spring:
   kafka:
-    bootstrap-servers: mulmuri.dev:9092
-    producer:
-      bootstrap-servers: mulmuri.dev:9092
-      key-serializer: org.apache.kafka.common.serialization.LongSerializer
-      value-serializer: io.goboolean.streams.serde.JsonAggregateSerde.JsonSerializer
+    bootstrap-servers: mulmuri.dev:9092 #${KAFKA_BOOTSTRAP_SERVERS}
     consumer:
       group-id: myGroup
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: io.goboolean.streams.serde.JsonTradeSerde.JsonDeserializer
+      key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
+      value-deserializer: io.goboolean.streams.serde.AggregateSerde.JsonDeserializer
       auto-offset-reset: earliest
+
+etcd:
+  endpoints: mulmuri.dev:2379  #${ETCD_ENDPOINTS}
+
+kafka:
+  bootstrap-servers: mulmuri.dev:9092 #${KAFKA_BOOTSTRAP_SERVERS}
+  application-id-config: KAFKA_STREAMS_APP
+
+open-telemetry:
+  endpoint: http://mulmuri.dev:4317
+  service-name: fetch-system.streams
+  service-version: 0.1.0
+
+logging:
+  config: classpath:log4j2.xml
+  level:
+    io.goboolean: INFO
+    org.springframework.boot: INFO
