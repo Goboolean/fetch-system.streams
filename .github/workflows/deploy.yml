@@ -3,7 +3,7 @@ name: Continuous Deployment
 on:
   push:
     branches:
-      - main
+      - feature/deploy
 
 jobs:
   test:
@@ -18,4 +18,5 @@ jobs:
 
       - name: Run a test # 
         run: |
-          make build-image
+          make build-app
+          make deploy-app
