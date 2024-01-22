@@ -1,6 +1,6 @@
 spring:
   kafka:
-    bootstrap-servers: mulmuri.dev:9092 #${KAFKA_BOOTSTRAP_SERVERS}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
     consumer:
       group-id: myGroup
       key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
@@ -8,14 +8,14 @@ spring:
       auto-offset-reset: earliest
 
 etcd:
-  endpoints: mulmuri.dev:2379  #${ETCD_ENDPOINTS}
+  endpoints: ${ETCD_ENDPOINTS}
 
 kafka:
-  bootstrap-servers: mulmuri.dev:9092 #${KAFKA_BOOTSTRAP_SERVERS}
+  bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
   application-id-config: KAFKA_STREAMS_APP
 
 open-telemetry:
-  endpoint: http://mulmuri.dev:4317
+  endpoint: ${OTEL_ENDPOINT}
   service-name: fetch-system.streams
   service-version: 0.1.0
 

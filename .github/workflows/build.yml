@@ -1,10 +1,9 @@
-name: Continuous Integration
+name: Continuous Delivery
 
 on:
   push:
     branches:
-      - feature/**
-      - refactor/**
+      - main
 
 jobs:
   test:
@@ -17,6 +16,6 @@ jobs:
         run: |
           echo "${{ secrets.ENV }}" base64 -d > .env
 
-      - name: Run a test
+      - name: Build an app
         run: |
-          make test-app
+          make build-app

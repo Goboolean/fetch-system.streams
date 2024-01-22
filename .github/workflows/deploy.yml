@@ -1,9 +1,9 @@
-name: Run Test
+name: Continuous Deployment
 
 on:
   push:
     branches:
-      - main
+      - feature/deploy
 
 jobs:
   test:
@@ -16,6 +16,7 @@ jobs:
         run: |
           echo "${{ secrets.ENV }}" base64 -d > .env
 
-      - name: Run a test
+      - name: Run a test # 
         run: |
-          make build-image
+          make build-app
+          make deploy-app

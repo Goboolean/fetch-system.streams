@@ -8,9 +8,11 @@ services:
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - ETCD_ENDPOINTS=etcd:2379
+      - OTEL_ENDPOINT=http://otel-collector:4317
     depends_on:
       - kafka
       - etcd
+      - otel-collector
 
   kafka:
     hostname: kafka
@@ -42,3 +44,12 @@ services:
     ports:
       - "2379"
       - "2380"
+
+  otel-collector:
+    image: otel/opentelemetry-collector
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "4317"
+      - "8889"
