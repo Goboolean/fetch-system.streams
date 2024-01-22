@@ -3,7 +3,7 @@ test-app:
 	docker compose -p fetch-system-streams -f ./deploy/docker-compose.test.yml down --remove-orphans
 
 build-app:
-	docker build -t fetch-system-streams -f ./deploy/Dockerfile .
+	docker build -t registry.mulmuri.dev/fetch-system-streams:latest -f ./deploy/Dockerfile .
 	docker push registry.mulmuri.dev/fetch-system-streams:latest
 
 deploy-app:

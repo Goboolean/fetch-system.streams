@@ -6,9 +6,9 @@ COPY --chown=gradle:gradle build.gradle settings.gradle /home/gradle/project/
 
 COPY --chown=gradle:gradle src /home/gradle/project/src
 
-RUN gradle build --no-daemon
+RUN gradle build --no-daemon -x test
 
-FROM openjdk:11-jre
+FROM eclipse-temurin:19-jre
 
 WORKDIR /app
 
