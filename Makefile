@@ -3,11 +3,7 @@ test-app:
 	docker compose -p fetch-system-streams -f ./deploy/docker-compose.test.yml down --remove-orphans
 
 build-app:
-	docker build -t registry.mulmuri.dev/fetch-system-streams:latest -f ./deploy/Dockerfile .
-	docker push registry.mulmuri.dev/fetch-system-streams:latest
-
-deploy-app:
-	helm upgrade fetch-system ~/lab -n goboolean
+	docker build -t fetch-system-streams:latest -f ./deploy/Dockerfile .
 
 sync-protobuf:
 	@curl -s -L https://raw.githubusercontent.com/Goboolean/fetch-system.IaC/feature/model/api/protobuf/model.proto -o ./src/main/resources/model.proto
