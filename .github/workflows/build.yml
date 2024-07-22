@@ -41,7 +41,7 @@ jobs:
           docker push ${{ secrets.HARBOR_REGISTRY }}/fetch-system/fetch-system-streams:latest
 
   kustomize:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: build
 
     # Kustomize repository update workerflow
