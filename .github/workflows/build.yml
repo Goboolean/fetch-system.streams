@@ -52,8 +52,8 @@ jobs:
       - name: Push Docker image to Harbor
         run: |
           docker images
-          docker tag fetch-system-streams:latest ${{ secrets.HARBOR_REGISTRY }}/fetch-system/fetch-system-streams:latest
-          docker push ${{ secrets.HARBOR_REGISTRY }}/fetch-system/fetch-system-streams:latest
+          docker tag fetch-system-streams:latest ${{ secrets.HARBOR_REGISTRY }}/fetch-system/fetch-system-streams:${{ github.sha }}
+          docker push ${{ secrets.HARBOR_REGISTRY }}/fetch-system/fetch-system-streams:${{ github.sha }}
 
   kustomize:
     runs-on: ubuntu-latest
