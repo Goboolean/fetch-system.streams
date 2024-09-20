@@ -52,8 +52,8 @@ jobs:
 
       - name: Push Docker image to Harbor
         run: |
-          docker tag fetch-system-streams:latest ${{ secrets.HARBOR_REGISTRY }}/fetch-system/fetch-system-streams:${GITHUB_SHA::7}
-          docker push ${{ secrets.HARBOR_REGISTRY }}/fetch-system/fetch-system-streams:${GITHUB_SHA::7}
+          docker tag fetch-system/streams:latest ${{ secrets.HARBOR_REGISTRY }}/fetch-system/streams:${GITHUB_SHA::7}
+          docker push ${{ secrets.HARBOR_REGISTRY }}/fetch-system/streams:${GITHUB_SHA::7}
 
   kustomize:
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
