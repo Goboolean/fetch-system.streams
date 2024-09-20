@@ -49,11 +49,11 @@ jobs:
           registry: ${{ secrets.HARBOR_REGISTRY }}
           username: ${{ secrets.HARBOR_USERNAME }}
           password: ${{ secrets.HARBOR_PASSWORD }}
-        
+
       - name: Push Docker image to Harbor
         run: |
-          docker tag fetch-system-streams:latest ${{ secrets.HARBOR_REGISTRY }}/fetch-system/fetch-system-streams:${{ github.sha }}
-          docker push ${{ secrets.HARBOR_REGISTRY }}/fetch-system/fetch-system-streams:${{ github.sha }}
+          docker tag fetch-system-streams:latest ${{ secrets.HARBOR_REGISTRY }}/fetch-system/fetch-system-streams:${GITHUB_SHA::7}
+          docker push ${{ secrets.HARBOR_REGISTRY }}/fetch-system/fetch-system-streams:${GITHUB_SHA::7}
 
   kustomize:
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
@@ -64,7 +64,7 @@ jobs:
         uses: Goboolean/infrastructure/.github/actions/update-image-tag@feat/cicd
         with:
           app-name: ${{ github.event.repository.name }}
-          image-tag: ${{ github.sha }}
+          image-tag: ${GITHUB_SHA::7}
           id: ${{ secrets.IMAGE_TAG_UPDATE_APP_ID }}
           private-key: ${{ secrets.IMAGE_TAG_UPDATE_APP_PRIVATE_KEY }}
           profile: dev
