@@ -69,7 +69,7 @@ jobs:
         run: echo "SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
 
       - name: Update image tag
-        uses: Goboolean/manifests/.github/actions/update-image-tag@feat/cicd
+        uses: Goboolean/manifests/.github/actions/update-image-tag@main
         with:
           app-name: ${{ github.event.repository.name }}
           image-tag: ${{ env.SHORT_SHA }}
