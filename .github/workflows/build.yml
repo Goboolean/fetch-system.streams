@@ -65,11 +65,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - name: Extract image tag
+        run: echo "SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+
       - name: Update image tag
         uses: Goboolean/manifests/.github/actions/update-image-tag@feat/cicd
         with:
           app-name: ${{ github.event.repository.name }}
-          image-tag: ${GITHUB_SHA::7}
+          image-tag: ${{ env.SHORT_SHA }}
           id: ${{ secrets.IMAGE_TAG_UPDATE_APP_ID }}
           private-key: ${{ secrets.IMAGE_TAG_UPDATE_APP_PRIVATE_KEY }}
           profile: dev
